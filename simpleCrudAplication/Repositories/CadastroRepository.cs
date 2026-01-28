@@ -10,21 +10,24 @@ namespace simpleCrudAplication.Repositories
     {
         public void Inserir(Cadastro cadastro)
         {
-             /*
-             * Função responsável por inserir um novo cadastro no banco de dados
-             */
-            using var connection = DatabaseConnection.GetConnection();
-            connection.Open();
+            try
+            {
+                using var connection = DatabaseConnection.GetConnection();
+                connection.Open();
 
-            var query = "INSERT INTO cadastros (texto, numero) VALUES (@texto, @numero);";
-            using var command = new Npgsql.NpgsqlCommand(query, connection);
+                var query = "INSERT INTO cadastros (texto, numero) VALUES (@texto, @numero);";
+                using var command = new Npgsql.NpgsqlCommand(query, connection);
 
-            command.Parameters.AddWithValue("texto", cadastro.Texto);
-            command.Parameters.AddWithValue("numero", cadastro.Numero);
+                command.Parameters.AddWithValue("texto", cadastro.Texto);
+                command.Parameters.AddWithValue("numero", cadastro.Numero);
 
-            command.ExecuteNonQuery();
+                command.ExecuteNonQuery();
+            }
+            catch (Npgsql.PostgresException ex) when (ex.SqlState == "23505")
+            {
+                throw new Exception("Já existe um cadastro com esse número.");
+            }
         }
-
 
         public List<Cadastro> Listar()
         {
