@@ -69,7 +69,24 @@ namespace simpleCrudAplication.Repositories
             command.Parameters.AddWithValue("texto", cadastro.Texto);
             command.Parameters.AddWithValue("numero", cadastro.Numero);
 
-            command.ExecuteNonQuery()
+            command.ExecuteNonQuery();
+        }
+
+
+        public void Deletar(Cadastro cadastro)
+        {
+            /*
+             * Função responsável por deletar um cadastro no banco de dados
+             */
+            using var connection = DatabaseConnection.GetConnection();
+            connection.Open();
+
+            var query = "DELETE FROM cadastros WHERE numero = @numero;";
+            using var command = new Npgsql.NpgsqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("numero", cadastro.Numero);
+            
+            command.ExecuteNonQuery();
         }
     }
 }
